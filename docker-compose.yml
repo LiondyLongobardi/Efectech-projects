@@ -11,8 +11,8 @@ services:
     ports:
       - "8089:80"     # Cloudflare Tunnel → port 8089 on your server
     volumes:
-      # Optional: mount index.html directly for quick edits without rebuild
-      # - ./index.html:/usr/share/nginx/html/index.html:ro
+      - ./index.html:/usr/share/nginx/html/index.html:ro        # editar HTML sin rebuild
+      - ./images:/usr/share/nginx/html/images:ro                # logos y assets en vivo
       - nginx_logs:/var/log/nginx
     environment:
       - TZ=America/Lima
