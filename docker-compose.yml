@@ -11,8 +11,7 @@ services:
     ports:
       - "8089:80"     # Cloudflare Tunnel → port 8089 on your server
     volumes:
-      - ./index.html:/usr/share/nginx/html/index.html:ro        # editar HTML sin rebuild
-      - ./images:/usr/share/nginx/html/images:ro                # logos y assets en vivo
+      - ./images:/usr/share/nginx/html/images                   # logos en vivo (sin :ro por compatibilidad Synology)
       - nginx_logs:/var/log/nginx
     environment:
       - TZ=America/Lima
