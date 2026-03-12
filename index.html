@@ -56,16 +56,16 @@
     #navbar.scrolled .nav-link, #navbar.scrolled .logo-text { color: var(--white); }
     #navbar.scrolled .logo-sub { color: var(--green-light); }
 
-    .nav-logo { display: flex; align-items: center; gap: 12px; cursor: pointer;
-                overflow: hidden; height: 72px; }   /* recorta el espacio en blanco del PNG */
+    .nav-logo { display: flex; align-items: center; gap: 12px; cursor: pointer; }
     /* ── Logo images ──────────────────────────────────────────────────
-       Coloca tus archivos de logo en la carpeta images/:
-         images/logo-dark.png   → logo para fondo claro (navbar blanca)
-         images/logo-white.png  → logo para fondo oscuro (navbar scrolled)
-       El logo blanco debe tener fondo transparente (PNG con alpha).
+       Si el logo se ve pequeño es porque el PNG tiene mucho espacio en
+       blanco alrededor. Lo ideal es recortar el PNG al contenido exacto.
+       Archivos: images/logo-dark.png  (navbar clara)
+                 images/logo-white.png (navbar oscura / footer)
     ── */
-    .logo-img        { height: 200px; width: auto; display: block; flex-shrink: 0;
-                       margin-top: auto; margin-bottom: auto;
+    .logo-img        { height: 62px; width: 220px;
+                       object-fit: cover; object-position: center 35%;
+                       display: block; flex-shrink: 0;
                        transition: opacity var(--transition); }
     .logo-img-dark   { display: block; }
     .logo-img-white  { display: none;  }
