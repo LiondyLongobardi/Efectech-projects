@@ -8,6 +8,7 @@ services:
     image: efectech-web:latest
     container_name: efectech-web
     restart: unless-stopped
+    user: "root"                                                  # necesario para leer bind mounts en Synology
     ports:
       - "8089:80"     # Cloudflare Tunnel → port 8089 on your server
     volumes:
