@@ -30,7 +30,7 @@ command -v docker &>/dev/null && docker compose version &>/dev/null || error "Do
 ok "Docker found: $(docker --version)"
 
 # ── 2. Pull latest code ────────────────────────────────────────────
-REPO_URL="https://github.com/LiondyLongobardi/Projects---Longobardinas.git"
+REPO_URL="https://github.com/LiondyLongobardi/Efectech-projects.git"
 BRANCH="claude/efectech-website-8DkMZ"
 DEST="/opt/efectech"
 
@@ -58,15 +58,16 @@ ok "Container running."
 # ── 4. Health check ────────────────────────────────────────────────
 info "Waiting for server to start..."
 sleep 3
-if curl -sf http://localhost/ -o /dev/null; then
-  ok "Site is responding at http://localhost/"
+if curl -sf http://localhost:8089/ -o /dev/null; then
+  ok "Site is responding at http://localhost:8089/"
 else
   error "Site is NOT responding. Check logs: docker compose logs -f"
 fi
 
 echo ""
 echo -e "${GREEN}✓ Efectech deployed successfully!${NC}"
-echo -e "  Local:      ${TEAL}http://localhost${NC}"
+echo -e "  Local:      ${TEAL}http://localhost:8089${NC}"
+echo -e "  Public:     ${TEAL}https://efectech.com${NC} (via Cloudflare Tunnel)"
 echo -e "  Logs:       ${TEAL}docker compose -f $DEST/docker-compose.yml logs -f${NC}"
 echo -e "  Stop:       ${TEAL}docker compose -f $DEST/docker-compose.yml down${NC}"
 echo ""

@@ -56,17 +56,17 @@
     #navbar.scrolled .nav-link, #navbar.scrolled .logo-text { color: var(--white); }
     #navbar.scrolled .logo-sub { color: var(--green-light); }
 
-    .nav-logo { display: flex; align-items: center; gap: 10px; cursor: pointer; }
-    .logo-icon {
-      width: 44px; height: 44px;
-      background: linear-gradient(135deg, var(--green-mid), var(--teal));
-      border-radius: 10px; display: flex; align-items: center; justify-content: center;
-      font-size: 1.3rem; color: white; font-weight: 900; letter-spacing: -1px;
-      box-shadow: 0 4px 14px rgba(34,211,238,.35);
-    }
-    .logo-text-wrap { display: flex; flex-direction: column; line-height: 1; }
+    .nav-logo { display: flex; align-items: center; gap: 12px; cursor: pointer; }
+    .logo-svg  { flex-shrink: 0; display: block; }
+    .logo-text-wrap { display: flex; flex-direction: column; line-height: 1.2; }
     .logo-text { font-size: 1.35rem; font-weight: 800; color: var(--navy); letter-spacing: -.5px; transition: var(--transition); }
     .logo-sub  { font-size: .62rem; font-weight: 500; color: var(--green-dark); letter-spacing: .4px; transition: var(--transition); }
+    /* Logo adapts when navbar is dark */
+    #navbar.scrolled .logo-text { color: var(--white); }
+    #navbar.scrolled .logo-sub  { color: var(--green-light); }
+    /* SVG text nodes inside the logo SVG */
+    #navbar.scrolled .logo-svg .logo-svg-text { fill: var(--white); }
+    #navbar.scrolled .logo-svg .logo-svg-sub  { fill: var(--green-light); }
 
     .nav-links { display: flex; align-items: center; gap: 2rem; }
     .nav-link {
@@ -538,7 +538,7 @@
        WHATSAPP BUTTON
     ═══════════════════════════════════════════ */
     .wa-btn {
-      position: fixed; bottom: 5rem; right: 2rem; z-index: 998;
+      position: fixed; bottom: 9rem; right: 2rem; z-index: 998;
       width: 50px; height: 50px; border-radius: 50%;
       background: #25d366; color: white;
       display: flex; align-items: center; justify-content: center;
@@ -582,11 +582,38 @@
 <!-- ▸ NAVBAR -->
 <nav id="navbar">
   <div class="nav-logo" onclick="scrollTo(0,0)">
-    <div class="logo-icon"><i class="fa-solid fa-bolt"></i></div>
-    <div class="logo-text-wrap">
-      <span class="logo-text">Efectech</span>
-      <span class="logo-sub">Efectivo digital, al instante.</span>
-    </div>
+    <!-- Efectech SVG Logo – icon + text, adapts to dark/light navbar -->
+    <svg class="logo-svg" width="148" height="42" viewBox="0 0 370 105" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="iconGrad" x1="0" y1="0" x2="95" y2="95" gradientUnits="userSpaceOnUse">
+          <stop offset="0%"   stop-color="#5de08a"/>
+          <stop offset="100%" stop-color="#2ec97e"/>
+        </linearGradient>
+      </defs>
+      <!-- ── Banknote icon ── -->
+      <!-- back note (offset) -->
+      <rect x="6" y="4"  width="82" height="53" rx="8" stroke="url(#iconGrad)" stroke-width="5" fill="none" opacity="0.45"/>
+      <!-- front note -->
+      <rect x="12" y="14" width="82" height="53" rx="8" stroke="url(#iconGrad)" stroke-width="5.5" fill="none"/>
+      <!-- center chip circle -->
+      <circle cx="53" cy="41" r="13" stroke="url(#iconGrad)" stroke-width="5" fill="none"/>
+      <!-- horizontal lines left/right of circle -->
+      <line x1="25" y1="41" x2="40" y2="41" stroke="url(#iconGrad)" stroke-width="4" stroke-linecap="round"/>
+      <line x1="66" y1="41" x2="82" y2="41" stroke="url(#iconGrad)" stroke-width="4" stroke-linecap="round"/>
+      <!-- top-left corner detail -->
+      <path d="M20 28 L20 22 L27 22" stroke="url(#iconGrad)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      <!-- bottom-right corner detail -->
+      <path d="M80 54 L80 61 L73 61" stroke="url(#iconGrad)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+
+      <!-- ── "Efectech" text ── -->
+      <text class="logo-svg-text" x="106" y="50"
+            font-family="Poppins, sans-serif" font-size="38" font-weight="800"
+            fill="#1b2e4a" letter-spacing="-1">Efectech</text>
+      <!-- ── tagline ── -->
+      <text class="logo-svg-sub" x="106" y="74"
+            font-family="Poppins, sans-serif" font-size="15" font-weight="500"
+            fill="#1a9e60" letter-spacing="0.5">Efectivo digital, al instante.</text>
+    </svg>
   </div>
   <div class="hamburger" id="hamburger">
     <span></span><span></span><span></span>
@@ -909,7 +936,7 @@
         <div class="contact-icon-box"><i class="fa-solid fa-envelope"></i></div>
         <div class="contact-item-text">
           <strong>Correo electrónico</strong>
-          <span>hola@efectech.pe</span>
+          <span>hola@efectech.com</span>
         </div>
       </div>
       <div class="contact-item">
@@ -991,12 +1018,25 @@
 <footer>
   <div class="footer-grid">
     <div class="footer-brand">
+      <!-- Footer logo – always white/light version (dark background) -->
       <div class="nav-logo" style="margin-bottom:1rem">
-        <div class="logo-icon"><i class="fa-solid fa-bolt"></i></div>
-        <div class="logo-text-wrap">
-          <span class="logo-text">Efectech</span>
-          <span class="logo-sub">Efectivo digital, al instante.</span>
-        </div>
+        <svg width="148" height="42" viewBox="0 0 370 105" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0">
+          <defs>
+            <linearGradient id="iconGradFt" x1="0" y1="0" x2="95" y2="95" gradientUnits="userSpaceOnUse">
+              <stop offset="0%"   stop-color="#7eeaa0"/>
+              <stop offset="100%" stop-color="#3ddba0"/>
+            </linearGradient>
+          </defs>
+          <rect x="6" y="4"  width="82" height="53" rx="8" stroke="url(#iconGradFt)" stroke-width="5" fill="none" opacity="0.45"/>
+          <rect x="12" y="14" width="82" height="53" rx="8" stroke="url(#iconGradFt)" stroke-width="5.5" fill="none"/>
+          <circle cx="53" cy="41" r="13" stroke="url(#iconGradFt)" stroke-width="5" fill="none"/>
+          <line x1="25" y1="41" x2="40" y2="41" stroke="url(#iconGradFt)" stroke-width="4" stroke-linecap="round"/>
+          <line x1="66" y1="41" x2="82" y2="41" stroke="url(#iconGradFt)" stroke-width="4" stroke-linecap="round"/>
+          <path d="M20 28 L20 22 L27 22" stroke="url(#iconGradFt)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+          <path d="M80 54 L80 61 L73 61" stroke="url(#iconGradFt)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+          <text x="106" y="50" font-family="Poppins, sans-serif" font-size="38" font-weight="800" fill="#ffffff" letter-spacing="-1">Efectech</text>
+          <text x="106" y="74" font-family="Poppins, sans-serif" font-size="15" font-weight="500" fill="#5de08a" letter-spacing="0.5">Efectivo digital, al instante.</text>
+        </svg>
       </div>
       <p>Somos una fintech peruana comprometida con democratizar el acceso al crédito. Tecnología, transparencia y confianza en cada préstamo.</p>
       <div class="footer-social">
@@ -1036,7 +1076,7 @@
       <ul class="footer-contact">
         <li><i class="fa-solid fa-phone"></i> +51 900 000 000</li>
         <li><i class="fa-brands fa-whatsapp"></i> +51 900 000 000</li>
-        <li><i class="fa-solid fa-envelope"></i> hola@efectech.pe</li>
+        <li><i class="fa-solid fa-envelope"></i> hola@efectech.com</li>
         <li><i class="fa-solid fa-location-dot"></i> Lima, Perú</li>
         <li><i class="fa-solid fa-clock"></i> 7am – 10pm, todos los días</li>
       </ul>
