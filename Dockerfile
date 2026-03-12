@@ -2,6 +2,9 @@
 # Stage 1: serve static files with Nginx (Alpine, ~25 MB total)
 FROM nginx:1.27-alpine
 
+# Run nginx workers as root (needed for UGREEN NAS bind mount permissions)
+RUN sed -i 's/user\s*nginx;/user  root;/' /etc/nginx/nginx.conf
+
 # Remove default Nginx page
 RUN rm -rf /usr/share/nginx/html/*
 
