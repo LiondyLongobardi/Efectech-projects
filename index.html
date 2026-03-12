@@ -57,16 +57,18 @@
     #navbar.scrolled .logo-sub { color: var(--green-light); }
 
     .nav-logo { display: flex; align-items: center; gap: 12px; cursor: pointer; }
-    .logo-svg  { flex-shrink: 0; display: block; }
-    .logo-text-wrap { display: flex; flex-direction: column; line-height: 1.2; }
-    .logo-text { font-size: 1.35rem; font-weight: 800; color: var(--navy); letter-spacing: -.5px; transition: var(--transition); }
-    .logo-sub  { font-size: .62rem; font-weight: 500; color: var(--green-dark); letter-spacing: .4px; transition: var(--transition); }
-    /* Logo adapts when navbar is dark */
-    #navbar.scrolled .logo-text { color: var(--white); }
-    #navbar.scrolled .logo-sub  { color: var(--green-light); }
-    /* SVG text nodes inside the logo SVG */
-    #navbar.scrolled .logo-svg .logo-svg-text { fill: var(--white); }
-    #navbar.scrolled .logo-svg .logo-svg-sub  { fill: var(--green-light); }
+    /* ── Logo images ──────────────────────────────────────────────────
+       Coloca tus archivos de logo en la carpeta images/:
+         images/logo-dark.png   → logo para fondo claro (navbar blanca)
+         images/logo-white.png  → logo para fondo oscuro (navbar scrolled)
+       El logo blanco debe tener fondo transparente (PNG con alpha).
+    ── */
+    .logo-img        { height: 44px; width: auto; display: block; flex-shrink: 0;
+                       transition: opacity var(--transition); }
+    .logo-img-dark   { display: block; }
+    .logo-img-white  { display: none;  }
+    #navbar.scrolled .logo-img-dark  { display: none;  }
+    #navbar.scrolled .logo-img-white { display: block; }
 
     .nav-links { display: flex; align-items: center; gap: 2rem; }
     .nav-link {
@@ -582,38 +584,35 @@
 <!-- ▸ NAVBAR -->
 <nav id="navbar">
   <div class="nav-logo" onclick="scrollTo(0,0)">
-    <!-- Efectech SVG Logo – icon + text, adapts to dark/light navbar -->
-    <svg class="logo-svg" width="148" height="42" viewBox="0 0 370 105" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <linearGradient id="iconGrad" x1="0" y1="0" x2="95" y2="95" gradientUnits="userSpaceOnUse">
-          <stop offset="0%"   stop-color="#5de08a"/>
-          <stop offset="100%" stop-color="#2ec97e"/>
-        </linearGradient>
-      </defs>
-      <!-- ── Banknote icon ── -->
-      <!-- back note (offset) -->
-      <rect x="6" y="4"  width="82" height="53" rx="8" stroke="url(#iconGrad)" stroke-width="5" fill="none" opacity="0.45"/>
-      <!-- front note -->
-      <rect x="12" y="14" width="82" height="53" rx="8" stroke="url(#iconGrad)" stroke-width="5.5" fill="none"/>
-      <!-- center chip circle -->
-      <circle cx="53" cy="41" r="13" stroke="url(#iconGrad)" stroke-width="5" fill="none"/>
-      <!-- horizontal lines left/right of circle -->
-      <line x1="25" y1="41" x2="40" y2="41" stroke="url(#iconGrad)" stroke-width="4" stroke-linecap="round"/>
-      <line x1="66" y1="41" x2="82" y2="41" stroke="url(#iconGrad)" stroke-width="4" stroke-linecap="round"/>
-      <!-- top-left corner detail -->
-      <path d="M20 28 L20 22 L27 22" stroke="url(#iconGrad)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-      <!-- bottom-right corner detail -->
-      <path d="M80 54 L80 61 L73 61" stroke="url(#iconGrad)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-
-      <!-- ── "Efectech" text ── -->
-      <text class="logo-svg-text" x="106" y="50"
-            font-family="Poppins, sans-serif" font-size="38" font-weight="800"
-            fill="#1b2e4a" letter-spacing="-1">Efectech</text>
-      <!-- ── tagline ── -->
-      <text class="logo-svg-sub" x="106" y="74"
-            font-family="Poppins, sans-serif" font-size="15" font-weight="500"
-            fill="#1a9e60" letter-spacing="0.5">Efectivo digital, al instante.</text>
-    </svg>
+    <!--
+      ╔══════════════════════════════════════════════════════════════╗
+      ║  LOGOS – instrucciones:                                      ║
+      ║  1. Crea la carpeta  images/  junto a este index.html        ║
+      ║  2. Guarda el logo oscuro  como  images/logo-dark.png        ║
+      ║     (para navbar clara – fondo blanco/transparente)          ║
+      ║  3. Guarda el logo blanco como  images/logo-white.png        ║
+      ║     (para navbar oscura – texto e icono blancos, PNG con     ║
+      ║      fondo transparente)                                     ║
+      ║  El cambio es automático al hacer scroll.                    ║
+      ╚══════════════════════════════════════════════════════════════╝
+    -->
+    <!-- Logo versión oscura → visible cuando navbar es clara (inicio) -->
+    <img class="logo-img logo-img-dark"
+         src="images/logo-dark.png"
+         alt="Efectech – Efectivo digital, al instante."
+         onerror="this.style.display='none';this.nextElementSibling.style.display='none';document.getElementById('logoFallback').style.display='flex'"/>
+    <!-- Logo versión blanca → visible cuando navbar es oscura (scroll) -->
+    <img class="logo-img logo-img-white"
+         src="images/logo-white.png"
+         alt="Efectech – Efectivo digital, al instante."/>
+    <!-- Fallback de texto (se muestra solo si las imágenes no cargan) -->
+    <div id="logoFallback" style="display:none;align-items:center;gap:10px">
+      <div style="width:40px;height:40px;background:linear-gradient(135deg,#2ec97e,#22d3ee);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;color:white;font-weight:900">E</div>
+      <div style="display:flex;flex-direction:column;line-height:1.2">
+        <span style="font-size:1.3rem;font-weight:800;color:inherit;letter-spacing:-.5px">Efectech</span>
+        <span style="font-size:.6rem;font-weight:500;color:#1a9e60;letter-spacing:.4px">Efectivo digital, al instante.</span>
+      </div>
+    </div>
   </div>
   <div class="hamburger" id="hamburger">
     <span></span><span></span><span></span>
@@ -1018,25 +1017,21 @@
 <footer>
   <div class="footer-grid">
     <div class="footer-brand">
-      <!-- Footer logo – always white/light version (dark background) -->
-      <div class="nav-logo" style="margin-bottom:1rem">
-        <svg width="148" height="42" viewBox="0 0 370 105" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0">
-          <defs>
-            <linearGradient id="iconGradFt" x1="0" y1="0" x2="95" y2="95" gradientUnits="userSpaceOnUse">
-              <stop offset="0%"   stop-color="#7eeaa0"/>
-              <stop offset="100%" stop-color="#3ddba0"/>
-            </linearGradient>
-          </defs>
-          <rect x="6" y="4"  width="82" height="53" rx="8" stroke="url(#iconGradFt)" stroke-width="5" fill="none" opacity="0.45"/>
-          <rect x="12" y="14" width="82" height="53" rx="8" stroke="url(#iconGradFt)" stroke-width="5.5" fill="none"/>
-          <circle cx="53" cy="41" r="13" stroke="url(#iconGradFt)" stroke-width="5" fill="none"/>
-          <line x1="25" y1="41" x2="40" y2="41" stroke="url(#iconGradFt)" stroke-width="4" stroke-linecap="round"/>
-          <line x1="66" y1="41" x2="82" y2="41" stroke="url(#iconGradFt)" stroke-width="4" stroke-linecap="round"/>
-          <path d="M20 28 L20 22 L27 22" stroke="url(#iconGradFt)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-          <path d="M80 54 L80 61 L73 61" stroke="url(#iconGradFt)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-          <text x="106" y="50" font-family="Poppins, sans-serif" font-size="38" font-weight="800" fill="#ffffff" letter-spacing="-1">Efectech</text>
-          <text x="106" y="74" font-family="Poppins, sans-serif" font-size="15" font-weight="500" fill="#5de08a" letter-spacing="0.5">Efectivo digital, al instante.</text>
-        </svg>
+      <!-- Footer logo – usa images/logo-white.png (fondo oscuro, siempre blanco) -->
+      <div style="margin-bottom:1rem">
+        <img src="images/logo-white.png"
+             alt="Efectech"
+             style="height:44px;width:auto;display:block"
+             onerror="this.replaceWith(document.getElementById('logoFallbackFt').content.cloneNode(true))"/>
+        <template id="logoFallbackFt">
+          <div style="display:flex;align-items:center;gap:10px">
+            <div style="width:40px;height:40px;background:linear-gradient(135deg,#2ec97e,#22d3ee);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;color:white;font-weight:900">E</div>
+            <div style="display:flex;flex-direction:column;line-height:1.2">
+              <span style="font-size:1.3rem;font-weight:800;color:white;letter-spacing:-.5px">Efectech</span>
+              <span style="font-size:.6rem;font-weight:500;color:#5de08a;letter-spacing:.4px">Efectivo digital, al instante.</span>
+            </div>
+          </div>
+        </template>
       </div>
       <p>Somos una fintech peruana comprometida con democratizar el acceso al crédito. Tecnología, transparencia y confianza en cada préstamo.</p>
       <div class="footer-social">
