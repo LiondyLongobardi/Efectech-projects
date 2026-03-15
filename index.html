@@ -1137,7 +1137,7 @@ document.querySelectorAll('.nav-link').forEach(l=>l.addEventListener('click',()=
 /* ── Loan Calculator ── */
 const amtSlider  = document.getElementById('amountSlider');
 const cuotSlider = document.getElementById('cuotasSlider');
-const RATE = 0.07; // 7% mensual
+const RATE = 27.50; // 27.50% mensual
 
 function updateCalc(){
   const amt  = parseInt(amtSlider.value);
@@ -1155,8 +1155,8 @@ function updateCalc(){
   document.getElementById('totalPagar').textContent  = 'S/. ' + Math.round(total).toLocaleString();
 
   // Update slider fill
-  const amtPct = ((amt-200)/(5000-200))*100;
-  const cuotPct= ((quot-1)/(12-1))*100;
+  const amtPct = ((amt-100)/(3000-100))*100;
+  const cuotPct= ((quot-1)/(3-1))*100;
   amtSlider.style.setProperty('--pct', amtPct+'%');
   cuotSlider.style.setProperty('--pct', cuotPct+'%');
 }
