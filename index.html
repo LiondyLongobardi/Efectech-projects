@@ -1,0 +1,1242 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Efectech – Efectivo digital, al instante.</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <style>
+    /* ═══════════════════════════════════════════
+       VARIABLES & RESET
+    ═══════════════════════════════════════════ */
+    :root {
+      --green-light: #5de08a;
+      --green-mid:   #2ec97e;
+      --green-dark:  #1a9e60;
+      --teal:        #22d3ee;
+      --navy:        #1b2e4a;
+      --navy-dark:   #0f1d30;
+      --white:       #ffffff;
+      --gray-light:  #f4f7fb;
+      --gray:        #8a9ab0;
+      --shadow:      0 8px 32px rgba(27,46,74,.12);
+      --radius:      14px;
+      --transition:  .35s cubic-bezier(.4,0,.2,1);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Poppins', sans-serif; color: var(--navy); background: var(--white); overflow-x: hidden; }
+    a { text-decoration: none; color: inherit; }
+    img { max-width: 100%; display: block; }
+    ul { list-style: none; }
+
+    /* ═══════════════════════════════════════════
+       SCROLL BAR
+    ═══════════════════════════════════════════ */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--gray-light); }
+    ::-webkit-scrollbar-thumb { background: linear-gradient(var(--green-mid), var(--teal)); border-radius: 99px; }
+
+    /* ═══════════════════════════════════════════
+       NAVBAR
+    ═══════════════════════════════════════════ */
+    #navbar {
+      position: fixed; top: 0; left: 0; width: 100%; z-index: 1000;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 5%; height: 72px;
+      background: rgba(255,255,255,.92);
+      backdrop-filter: blur(14px);
+      box-shadow: 0 2px 24px rgba(27,46,74,.08);
+      transition: var(--transition);
+    }
+    #navbar.scrolled { background: rgba(27,46,74,.97); }
+    #navbar.scrolled .nav-link, #navbar.scrolled .logo-text { color: var(--white); }
+    #navbar.scrolled .logo-sub { color: var(--green-light); }
+
+    .nav-logo { display: flex; align-items: center; gap: 12px; cursor: pointer; }
+    /* ── Logo images ──────────────────────────────────────────────────
+       Si el logo se ve pequeño es porque el PNG tiene mucho espacio en
+       blanco alrededor. Lo ideal es recortar el PNG al contenido exacto.
+       Archivos: images/logo-dark.png  (navbar clara)
+                 images/logo-white.png (navbar oscura / footer)
+    ── */
+    .logo-img        { height: 55px; width: auto;
+                       display: block; flex-shrink: 0;
+                       transition: opacity var(--transition); }
+    .logo-img-dark   { display: block; }
+    .logo-img-white  { display: none;  }
+    #navbar.scrolled .logo-img-dark  { display: none;  }
+    #navbar.scrolled .logo-img-white { display: block; }
+
+    .nav-links { display: flex; align-items: center; gap: 2rem; }
+    .nav-link {
+      font-size: .9rem; font-weight: 500; color: var(--navy);
+      position: relative; padding-bottom: 4px; transition: var(--transition);
+    }
+    .nav-link::after {
+      content: ''; position: absolute; bottom: 0; left: 0;
+      width: 0; height: 2px;
+      background: linear-gradient(90deg, var(--green-mid), var(--teal));
+      border-radius: 2px; transition: var(--transition);
+    }
+    .nav-link:hover { color: var(--green-mid); }
+    .nav-link:hover::after { width: 100%; }
+
+    .btn-portal {
+      padding: .55rem 1.4rem;
+      background: linear-gradient(135deg, var(--green-mid), var(--teal));
+      color: var(--white); font-weight: 600; font-size: .88rem;
+      border-radius: 50px; border: none; cursor: pointer;
+      box-shadow: 0 4px 18px rgba(34,211,238,.3);
+      transition: var(--transition);
+    }
+    .btn-portal:hover { transform: translateY(-2px); box-shadow: 0 8px 26px rgba(34,211,238,.45); }
+
+    /* Hamburger */
+    .hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; padding: 4px; }
+    .hamburger span { display: block; width: 24px; height: 2px; background: var(--navy); border-radius: 2px; transition: var(--transition); }
+    #navbar.scrolled .hamburger span { background: var(--white); }
+
+    /* ═══════════════════════════════════════════
+       HERO SLIDER
+    ═══════════════════════════════════════════ */
+    #hero {
+      position: relative; height: 100vh; min-height: 600px;
+      overflow: hidden; display: flex; align-items: center;
+    }
+    .slide {
+      position: absolute; inset: 0;
+      background-size: cover; background-position: center;
+      opacity: 0; transition: opacity 1.2s ease;
+    }
+    .slide.active { opacity: 1; }
+    /* Gradient overlays per slide */
+    .slide-1 { background: linear-gradient(135deg, #0f1d30 0%, #1b3a5c 40%, #0d3b2e 100%); }
+    .slide-2 { background: linear-gradient(135deg, #1a2a4a 0%, #0d3b3b 50%, #0a2a1a 100%); }
+    .slide-3 { background: linear-gradient(135deg, #0f1d40 0%, #1a1a4a 50%, #0d1a30 100%); }
+
+    /* Animated blobs */
+    .blob {
+      position: absolute; border-radius: 50%;
+      filter: blur(80px); opacity: .18;
+      animation: blobFloat 8s ease-in-out infinite;
+    }
+    .blob-1 { width: 500px; height: 500px; background: var(--green-mid); top: -100px; right: -100px; }
+    .blob-2 { width: 400px; height: 400px; background: var(--teal); bottom: -80px; left: 10%; animation-delay: -4s; }
+    .blob-3 { width: 300px; height: 300px; background: var(--green-light); top: 30%; left: 30%; animation-delay: -2s; }
+    @keyframes blobFloat {
+      0%,100% { transform: translateY(0) scale(1); }
+      50%      { transform: translateY(-30px) scale(1.05); }
+    }
+
+    /* Particles */
+    .particles { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+    .particle {
+      position: absolute; width: 3px; height: 3px;
+      background: rgba(94,224,138,.6); border-radius: 50%;
+      animation: particleFly linear infinite;
+    }
+    @keyframes particleFly {
+      0%   { transform: translateY(100vh) translateX(0); opacity: 0; }
+      10%  { opacity: 1; }
+      90%  { opacity: 1; }
+      100% { transform: translateY(-20px) translateX(30px); opacity: 0; }
+    }
+
+    .hero-content {
+      position: relative; z-index: 2; width: 100%; padding: 0 5%;
+      display: flex; justify-content: space-between; align-items: center;
+      gap: 2rem; padding-top: 72px;
+    }
+    .hero-left { max-width: 560px; }
+    .hero-eyebrow {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(94,224,138,.15); border: 1px solid rgba(94,224,138,.3);
+      color: var(--green-light); font-size: .8rem; font-weight: 600;
+      padding: .35rem .9rem; border-radius: 50px; margin-bottom: 1.2rem;
+      animation: fadeInUp .8s .2s both;
+    }
+    .hero-eyebrow i { font-size: .75rem; animation: pulse 2s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+
+    .hero-title {
+      font-size: clamp(2.2rem, 5vw, 4rem); font-weight: 900;
+      color: var(--white); line-height: 1.1; margin-bottom: 1.2rem;
+      animation: fadeInUp .8s .4s both;
+    }
+    .hero-title .gradient-text {
+      background: linear-gradient(90deg, var(--green-light), var(--teal));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .hero-desc {
+      font-size: 1.05rem; color: rgba(255,255,255,.75); line-height: 1.7;
+      margin-bottom: 2rem; animation: fadeInUp .8s .6s both;
+    }
+    .hero-btns { display: flex; gap: 1rem; flex-wrap: wrap; animation: fadeInUp .8s .8s both; }
+    .btn-primary {
+      padding: .85rem 2rem;
+      background: linear-gradient(135deg, var(--green-mid), var(--teal));
+      color: white; font-weight: 700; font-size: 1rem;
+      border-radius: 50px; border: none; cursor: pointer;
+      box-shadow: 0 6px 24px rgba(34,211,238,.35);
+      transition: var(--transition); display: inline-flex; align-items: center; gap: 8px;
+    }
+    .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 12px 32px rgba(34,211,238,.5); }
+    .btn-secondary {
+      padding: .85rem 2rem;
+      background: transparent; color: white; font-weight: 600; font-size: 1rem;
+      border-radius: 50px; border: 2px solid rgba(255,255,255,.4);
+      cursor: pointer; transition: var(--transition);
+      display: inline-flex; align-items: center; gap: 8px;
+    }
+    .btn-secondary:hover { border-color: var(--green-light); color: var(--green-light); transform: translateY(-3px); }
+
+    /* Loan Calculator Card */
+    .loan-card {
+      background: rgba(255,255,255,.97); border-radius: 20px;
+      padding: 2rem; width: 360px; flex-shrink: 0;
+      box-shadow: 0 20px 60px rgba(0,0,0,.25);
+      animation: fadeInRight .9s .5s both;
+    }
+    .loan-card h3 { font-size: 1.4rem; font-weight: 800; color: var(--navy); margin-bottom: 1.5rem; text-align: center; }
+    .slider-wrap { margin-bottom: 1.2rem; }
+    .slider-labels { display: flex; justify-content: space-between; font-size: .78rem; color: var(--gray); margin-bottom: .4rem; font-weight: 500; }
+    .slider-val { font-size: 1rem; font-weight: 700; color: var(--green-dark); margin-bottom: .5rem; }
+    input[type=range] {
+      width: 100%; -webkit-appearance: none; height: 5px;
+      border-radius: 99px; outline: none;
+      background: linear-gradient(90deg, var(--green-mid) var(--pct,30%), #e0e7ef var(--pct,30%));
+      cursor: pointer;
+    }
+    input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none; width: 20px; height: 20px;
+      border-radius: 50%; background: white;
+      border: 3px solid var(--green-mid);
+      box-shadow: 0 2px 10px rgba(46,201,126,.4);
+      cursor: pointer; transition: var(--transition);
+    }
+    input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.2); }
+    .calc-results { border-top: 1px solid #eef0f5; padding-top: 1rem; margin-top: .5rem; }
+    .calc-row { display: flex; justify-content: space-between; align-items: center; padding: .5rem 0; border-bottom: 1px dashed #eef0f5; }
+    .calc-row:last-child { border-bottom: none; }
+    .calc-row span:first-child { font-size: .85rem; color: var(--gray); font-weight: 500; }
+    .calc-row span:last-child  { font-size: .95rem; font-weight: 700; color: var(--navy); }
+    .btn-solicitar {
+      width: 100%; margin-top: 1.2rem; padding: .9rem;
+      background: linear-gradient(135deg, var(--green-mid), var(--teal));
+      color: white; font-size: 1rem; font-weight: 700;
+      border-radius: 50px; border: none; cursor: pointer;
+      box-shadow: 0 6px 24px rgba(34,211,238,.3);
+      transition: var(--transition); display: flex; align-items: center; justify-content: center; gap: 8px;
+    }
+    .btn-solicitar:hover { transform: translateY(-2px); box-shadow: 0 10px 32px rgba(34,211,238,.45); }
+
+    /* Slider nav */
+    .slide-nav { position: absolute; bottom: 2.5rem; left: 50%; transform: translateX(-50%); z-index: 10; display: flex; gap: 10px; }
+    .slide-dot { width: 10px; height: 10px; border-radius: 99px; background: rgba(255,255,255,.4); cursor: pointer; transition: var(--transition); }
+    .slide-dot.active { background: var(--green-light); width: 28px; }
+    .slide-arrows { position: absolute; top: 50%; transform: translateY(-50%); width: 100%; display: flex; justify-content: space-between; padding: 0 1.5%; z-index: 10; }
+    .slide-arr {
+      width: 44px; height: 44px; border-radius: 50%;
+      background: rgba(255,255,255,.15); backdrop-filter: blur(8px);
+      border: 1px solid rgba(255,255,255,.25); color: white;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; transition: var(--transition); font-size: 1rem;
+    }
+    .slide-arr:hover { background: rgba(94,224,138,.3); }
+
+    /* Scroll indicator */
+    .scroll-indicator {
+      position: absolute; bottom: 2rem; left: 5%; z-index: 10;
+      display: flex; flex-direction: column; align-items: center; gap: 6px;
+    }
+    .scroll-line { width: 1px; height: 50px; background: linear-gradient(var(--green-light), transparent); animation: scrollPulse 1.8s ease-in-out infinite; }
+    @keyframes scrollPulse { 0%,100%{opacity:.4;transform:scaleY(1)} 50%{opacity:1;transform:scaleY(1.1)} }
+    .scroll-text { font-size: .65rem; color: rgba(255,255,255,.5); letter-spacing: 2px; text-transform: uppercase; writing-mode: vertical-lr; }
+
+    @keyframes fadeInUp   { from{opacity:0;transform:translateY(30px)} to{opacity:1;transform:translateY(0)} }
+    @keyframes fadeInRight{ from{opacity:0;transform:translateX(40px)} to{opacity:1;transform:translateX(0)} }
+
+    /* ═══════════════════════════════════════════
+       STATS BANNER
+    ═══════════════════════════════════════════ */
+    #stats {
+      background: linear-gradient(135deg, var(--navy-dark), var(--navy));
+      padding: 3rem 5%; display: flex; justify-content: space-around;
+      flex-wrap: wrap; gap: 2rem;
+    }
+    .stat-item { text-align: center; }
+    .stat-number {
+      font-size: 2.4rem; font-weight: 900;
+      background: linear-gradient(90deg, var(--green-light), var(--teal));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      display: block;
+    }
+    .stat-label { font-size: .85rem; color: rgba(255,255,255,.6); font-weight: 500; margin-top: .3rem; }
+
+    /* ═══════════════════════════════════════════
+       SECTION COMMONS
+    ═══════════════════════════════════════════ */
+    section { padding: 5rem 5%; }
+    .section-header { text-align: center; margin-bottom: 3.5rem; }
+    .section-tag {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: linear-gradient(135deg, rgba(46,201,126,.12), rgba(34,211,238,.12));
+      border: 1px solid rgba(46,201,126,.25); border-radius: 50px;
+      padding: .35rem .9rem; font-size: .78rem; font-weight: 600;
+      color: var(--green-dark); margin-bottom: .8rem;
+    }
+    .section-title { font-size: clamp(1.7rem, 3.5vw, 2.6rem); font-weight: 800; color: var(--navy); line-height: 1.2; }
+    .section-title span { background: linear-gradient(90deg, var(--green-mid), var(--teal)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .section-desc { font-size: 1rem; color: var(--gray); margin-top: .8rem; max-width: 560px; margin-left: auto; margin-right: auto; line-height: 1.7; }
+
+    /* ═══════════════════════════════════════════
+       SERVICES
+    ═══════════════════════════════════════════ */
+    #servicios { background: var(--gray-light); }
+    .services-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.8rem; }
+    .service-card {
+      background: var(--white); border-radius: var(--radius);
+      padding: 2rem 1.8rem; position: relative; overflow: hidden;
+      box-shadow: var(--shadow); transition: var(--transition);
+      border: 1px solid transparent;
+    }
+    .service-card::before {
+      content: ''; position: absolute; inset: 0; border-radius: var(--radius);
+      background: linear-gradient(135deg, rgba(46,201,126,.06), rgba(34,211,238,.06));
+      opacity: 0; transition: var(--transition);
+    }
+    .service-card:hover { transform: translateY(-8px); border-color: rgba(46,201,126,.2); box-shadow: 0 20px 50px rgba(27,46,74,.15); }
+    .service-card:hover::before { opacity: 1; }
+    .service-icon {
+      width: 60px; height: 60px; border-radius: 14px; margin-bottom: 1.3rem;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.5rem; color: white;
+      background: linear-gradient(135deg, var(--green-mid), var(--teal));
+      box-shadow: 0 6px 20px rgba(34,211,238,.3);
+    }
+    .service-card h4 { font-size: 1.1rem; font-weight: 700; color: var(--navy); margin-bottom: .6rem; }
+    .service-card p { font-size: .88rem; color: var(--gray); line-height: 1.65; }
+    .service-link { display: inline-flex; align-items: center; gap: 6px; margin-top: 1rem; font-size: .85rem; font-weight: 600; color: var(--green-dark); transition: var(--transition); }
+    .service-link:hover { gap: 10px; }
+
+    /* ═══════════════════════════════════════════
+       HOW IT WORKS
+    ═══════════════════════════════════════════ */
+    #como { background: var(--white); }
+    .steps-wrap { display: flex; align-items: flex-start; justify-content: center; gap: 0; flex-wrap: wrap; }
+    .step { flex: 1; min-width: 180px; max-width: 240px; text-align: center; position: relative; padding: 0 1rem; }
+    .step:not(:last-child)::after {
+      content: ''; position: absolute; top: 36px; right: -10px;
+      width: calc(100% - 60px); height: 2px;
+      background: linear-gradient(90deg, var(--green-mid), var(--teal));
+      opacity: .3;
+    }
+    .step-num {
+      width: 72px; height: 72px; border-radius: 50%; margin: 0 auto 1rem;
+      background: linear-gradient(135deg, var(--green-mid), var(--teal));
+      color: white; font-size: 1.5rem; font-weight: 900;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 8px 24px rgba(34,211,238,.3);
+      position: relative; z-index: 1;
+      transition: var(--transition);
+    }
+    .step:hover .step-num { transform: scale(1.1) rotate(5deg); }
+    .step h4 { font-size: 1rem; font-weight: 700; color: var(--navy); margin-bottom: .5rem; }
+    .step p { font-size: .84rem; color: var(--gray); line-height: 1.6; }
+
+    /* ═══════════════════════════════════════════
+       ABOUT
+    ═══════════════════════════════════════════ */
+    #nosotros { background: var(--gray-light); }
+    .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; }
+    .about-visual { position: relative; }
+    .about-img-main {
+      width: 100%; aspect-ratio: 4/3; border-radius: 20px; overflow: hidden;
+      background: linear-gradient(135deg, var(--navy) 0%, var(--green-dark) 50%, var(--navy-dark) 100%);
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 20px 60px rgba(27,46,74,.2);
+    }
+    .about-img-main i { font-size: 6rem; color: rgba(255,255,255,.15); }
+    .about-badge {
+      position: absolute; bottom: -1.5rem; right: -1.5rem;
+      background: linear-gradient(135deg, var(--green-mid), var(--teal));
+      border-radius: 16px; padding: 1.2rem 1.5rem;
+      color: white; text-align: center; box-shadow: 0 8px 30px rgba(34,211,238,.3);
+    }
+    .about-badge .num { font-size: 2.2rem; font-weight: 900; display: block; line-height: 1; }
+    .about-badge .lbl { font-size: .75rem; font-weight: 500; opacity: .85; }
+    .about-text .section-header { text-align: left; margin-bottom: 1.5rem; }
+    .about-text .section-desc { text-align: left; margin-left: 0; margin-right: 0; }
+    .features-list { margin-top: 1.5rem; display: grid; grid-template-columns: 1fr 1fr; gap: .8rem; }
+    .feat-item { display: flex; align-items: center; gap: 8px; font-size: .88rem; font-weight: 500; color: var(--navy); }
+    .feat-item i { color: var(--green-mid); font-size: .9rem; }
+
+    /* ═══════════════════════════════════════════
+       TESTIMONIALS
+    ═══════════════════════════════════════════ */
+    #testimonios {
+      background: linear-gradient(135deg, var(--navy-dark) 0%, var(--navy) 100%);
+      position: relative; overflow: hidden;
+    }
+    #testimonios .section-title { color: white; }
+    #testimonios .section-tag { background: rgba(94,224,138,.12); border-color: rgba(94,224,138,.25); color: var(--green-light); }
+    .testi-slider { position: relative; overflow: hidden; }
+    .testi-track { display: flex; transition: transform .6s cubic-bezier(.4,0,.2,1); }
+    .testi-card {
+      min-width: 100%; padding: 0 10%;
+    }
+    .testi-inner {
+      background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.1);
+      border-radius: 20px; padding: 2.5rem; backdrop-filter: blur(10px);
+      max-width: 800px; margin: 0 auto;
+    }
+    .testi-stars { color: #ffd700; font-size: 1.1rem; margin-bottom: 1rem; letter-spacing: 3px; }
+    .testi-text { font-size: 1.05rem; color: rgba(255,255,255,.85); line-height: 1.75; font-style: italic; margin-bottom: 1.5rem; }
+    .testi-author { display: flex; align-items: center; gap: 1rem; }
+    .testi-avatar {
+      width: 50px; height: 50px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--green-mid), var(--teal));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.2rem; color: white; font-weight: 700; flex-shrink: 0;
+    }
+    .testi-name { font-weight: 700; color: white; }
+    .testi-role { font-size: .82rem; color: rgba(255,255,255,.5); }
+    .testi-nav { display: flex; justify-content: center; gap: 10px; margin-top: 2rem; }
+    .testi-dot { width: 9px; height: 9px; border-radius: 50%; background: rgba(255,255,255,.25); cursor: pointer; transition: var(--transition); }
+    .testi-dot.active { background: var(--green-light); transform: scale(1.2); }
+
+    /* ═══════════════════════════════════════════
+       CONTACT
+    ═══════════════════════════════════════════ */
+    #contacto { background: var(--white); }
+    .contact-grid { display: grid; grid-template-columns: 1fr 1.4fr; gap: 4rem; align-items: start; }
+    .contact-info { }
+    .contact-info h3 { font-size: 1.8rem; font-weight: 800; color: var(--navy); margin-bottom: .8rem; }
+    .contact-info p { font-size: .95rem; color: var(--gray); line-height: 1.7; margin-bottom: 2rem; }
+    .contact-item { display: flex; align-items: flex-start; gap: 1rem; margin-bottom: 1.4rem; }
+    .contact-icon-box {
+      width: 48px; height: 48px; border-radius: 12px; flex-shrink: 0;
+      background: linear-gradient(135deg, rgba(46,201,126,.12), rgba(34,211,238,.12));
+      border: 1px solid rgba(46,201,126,.2);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1rem; color: var(--green-dark);
+    }
+    .contact-item-text strong { font-weight: 700; font-size: .9rem; color: var(--navy); display: block; }
+    .contact-item-text span { font-size: .85rem; color: var(--gray); }
+
+    /* Form */
+    .contact-form { background: var(--gray-light); border-radius: 20px; padding: 2.5rem; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .form-group { margin-bottom: 1.2rem; }
+    .form-group label { display: block; font-size: .83rem; font-weight: 600; color: var(--navy); margin-bottom: .45rem; }
+    .form-group input, .form-group select, .form-group textarea {
+      width: 100%; padding: .8rem 1rem;
+      background: white; border: 1.5px solid #e0e7ef;
+      border-radius: 10px; font-family: inherit; font-size: .9rem; color: var(--navy);
+      transition: var(--transition); outline: none;
+    }
+    .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+      border-color: var(--green-mid); box-shadow: 0 0 0 3px rgba(46,201,126,.12);
+    }
+    .form-group textarea { resize: vertical; min-height: 110px; }
+    .btn-submit {
+      width: 100%; padding: .95rem;
+      background: linear-gradient(135deg, var(--green-mid), var(--teal));
+      color: white; font-size: 1rem; font-weight: 700;
+      border-radius: 50px; border: none; cursor: pointer;
+      box-shadow: 0 6px 24px rgba(34,211,238,.3);
+      transition: var(--transition); display: flex; align-items: center; justify-content: center; gap: 8px;
+    }
+    .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 12px 32px rgba(34,211,238,.45); }
+    .form-success {
+      display: none; background: rgba(46,201,126,.1); border: 1px solid rgba(46,201,126,.3);
+      border-radius: 12px; padding: 1rem; text-align: center;
+      color: var(--green-dark); font-weight: 600; margin-top: 1rem;
+    }
+
+    /* ═══════════════════════════════════════════
+       FOOTER
+    ═══════════════════════════════════════════ */
+    footer {
+      background: var(--navy-dark); color: rgba(255,255,255,.7);
+      padding: 4rem 5% 2rem;
+    }
+    .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1.2fr; gap: 3rem; margin-bottom: 3rem; }
+    .footer-brand .logo-text { color: white; font-size: 1.4rem; }
+    .footer-brand .logo-sub { color: var(--green-light); }
+    .footer-brand p { font-size: .87rem; color: rgba(255,255,255,.5); line-height: 1.7; margin-top: 1rem; max-width: 280px; }
+    .footer-social { display: flex; gap: .8rem; margin-top: 1.5rem; }
+    .social-link {
+      width: 38px; height: 38px; border-radius: 10px;
+      background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.1);
+      display: flex; align-items: center; justify-content: center;
+      color: rgba(255,255,255,.6); font-size: .9rem; transition: var(--transition);
+    }
+    .social-link:hover { background: linear-gradient(135deg, var(--green-mid), var(--teal)); border-color: transparent; color: white; transform: translateY(-2px); }
+
+    .footer-col h5 { font-size: .95rem; font-weight: 700; color: white; margin-bottom: 1.2rem; }
+    .footer-col ul li { margin-bottom: .7rem; }
+    .footer-col ul li a { font-size: .85rem; color: rgba(255,255,255,.5); transition: var(--transition); display: inline-flex; align-items: center; gap: 6px; }
+    .footer-col ul li a::before { content: '→'; opacity: 0; transition: var(--transition); font-size: .75rem; }
+    .footer-col ul li a:hover { color: var(--green-light); padding-left: 4px; }
+    .footer-col ul li a:hover::before { opacity: 1; }
+
+    .footer-contact li { display: flex; align-items: center; gap: 10px; font-size: .85rem; color: rgba(255,255,255,.5); margin-bottom: .8rem; }
+    .footer-contact li i { color: var(--green-mid); font-size: .9rem; width: 16px; }
+
+    .footer-bottom {
+      border-top: 1px solid rgba(255,255,255,.08); padding-top: 1.5rem;
+      display: flex; justify-content: space-between; align-items: center;
+      flex-wrap: wrap; gap: 1rem; font-size: .82rem; color: rgba(255,255,255,.35);
+    }
+    .footer-bottom a { color: var(--green-light); }
+
+    /* ═══════════════════════════════════════════
+       FLOATING CTA
+    ═══════════════════════════════════════════ */
+    .floating-cta {
+      position: fixed; bottom: 6rem; right: 2rem; z-index: 999;
+      background: linear-gradient(135deg, var(--green-mid), var(--teal));
+      color: white; padding: .8rem 1.4rem; border-radius: 50px;
+      font-weight: 700; font-size: .9rem;
+      box-shadow: 0 8px 28px rgba(34,211,238,.4);
+      display: flex; align-items: center; gap: 8px;
+      animation: floatBounce 3s ease-in-out infinite;
+      cursor: pointer; transition: var(--transition);
+      opacity: 0; transform: translateY(20px); pointer-events: none;
+    }
+    .floating-cta.visible { opacity: 1; transform: translateY(0); pointer-events: auto; }
+    .floating-cta:hover { transform: translateY(-4px); box-shadow: 0 14px 40px rgba(34,211,238,.55); }
+    @keyframes floatBounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-6px)} }
+
+    /* ═══════════════════════════════════════════
+       ANIMATIONS (Intersection Observer)
+    ═══════════════════════════════════════════ */
+    .reveal { opacity: 0; transform: translateY(30px); transition: opacity .7s ease, transform .7s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+    .reveal-left { opacity: 0; transform: translateX(-40px); transition: opacity .7s ease, transform .7s ease; }
+    .reveal-left.visible { opacity: 1; transform: translateX(0); }
+    .reveal-right { opacity: 0; transform: translateX(40px); transition: opacity .7s ease, transform .7s ease; }
+    .reveal-right.visible { opacity: 1; transform: translateX(0); }
+
+    /* ═══════════════════════════════════════════
+       BACK TO TOP
+    ═══════════════════════════════════════════ */
+    .back-top {
+      position: fixed; bottom: 2rem; left: 2rem; z-index: 999;
+      width: 44px; height: 44px; border-radius: 50%;
+      background: var(--navy); color: white;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: var(--shadow); cursor: pointer; transition: var(--transition);
+      opacity: 0; pointer-events: none;
+    }
+    .back-top.visible { opacity: 1; pointer-events: auto; }
+    .back-top:hover { background: linear-gradient(135deg, var(--green-mid), var(--teal)); transform: translateY(-3px); }
+
+    /* ═══════════════════════════════════════════
+       WHATSAPP BUTTON
+    ═══════════════════════════════════════════ */
+    .wa-btn {
+      position: fixed; bottom: 10rem; right: 2rem; z-index: 998;
+      width: 50px; height: 50px; border-radius: 50%;
+      background: #25d366; color: white;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.4rem; box-shadow: 0 6px 20px rgba(37,211,102,.4);
+      cursor: pointer; transition: var(--transition);
+      animation: waPulse 2.5s ease-in-out infinite;
+    }
+    .wa-btn:hover { transform: scale(1.1); }
+    @keyframes waPulse {
+      0%,100%{ box-shadow: 0 6px 20px rgba(37,211,102,.4); }
+      50%    { box-shadow: 0 6px 36px rgba(37,211,102,.7); }
+    }
+
+    /* ═══════════════════════════════════════════
+       RESPONSIVE
+    ═══════════════════════════════════════════ */
+    @media (max-width: 1100px) {
+      .footer-grid { grid-template-columns: 1fr 1fr; }
+      .about-grid  { grid-template-columns: 1fr; gap: 2.5rem; }
+      .about-badge { bottom: 1rem; right: 1rem; }
+    }
+    @media (max-width: 900px) {
+      .hero-content { flex-direction: column; justify-content: center; padding-top: 100px; }
+      .loan-card { width: 100%; max-width: 420px; }
+      .contact-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 768px) {
+      .nav-links { display: none; flex-direction: column; position: absolute; top: 72px; left: 0; width: 100%; background: white; padding: 1.5rem 5%; box-shadow: 0 8px 20px rgba(27,46,74,.1); gap: 1.2rem; }
+      .nav-links.open { display: flex; }
+      .hamburger { display: flex; }
+      #navbar.scrolled .nav-links { background: var(--navy-dark); }
+      .step:not(:last-child)::after { display: none; }
+      .steps-wrap { gap: 2rem; }
+      .form-row { grid-template-columns: 1fr; }
+      .footer-grid { grid-template-columns: 1fr; gap: 2rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ▸ NAVBAR -->
+<nav id="navbar">
+  <div class="nav-logo" onclick="scrollTo(0,0)">
+    <!--
+      ╔══════════════════════════════════════════════════════════════╗
+      ║  LOGOS – instrucciones:                                      ║
+      ║  1. Crea la carpeta  images/  junto a este index.html        ║
+      ║  2. Guarda el logo oscuro  como  images/logo-dark.png        ║
+      ║     (para navbar clara – fondo blanco/transparente)          ║
+      ║  3. Guarda el logo blanco como  images/logo-white.png        ║
+      ║     (para navbar oscura – texto e icono blancos, PNG con     ║
+      ║      fondo transparente)                                     ║
+      ║  El cambio es automático al hacer scroll.                    ║
+      ╚══════════════════════════════════════════════════════════════╝
+    -->
+    <!-- Logo versión oscura → visible cuando navbar es clara (inicio) -->
+    <img class="logo-img logo-img-dark"
+         src="images/logo-dark.png"
+         alt="Efectech – Efectivo digital, al instante."
+         onerror="this.style.display='none';this.nextElementSibling.style.display='none';document.getElementById('logoFallback').style.display='flex'"/>
+    <!-- Logo versión blanca → visible cuando navbar es oscura (scroll) -->
+    <img class="logo-img logo-img-white"
+         src="images/logo-white.png"
+         alt="Efectech – Efectivo digital, al instante."/>
+    <!-- Fallback de texto (se muestra solo si las imágenes no cargan) -->
+    <div id="logoFallback" style="display:none;align-items:center;gap:10px">
+      <div style="width:40px;height:40px;background:linear-gradient(135deg,#2ec97e,#22d3ee);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;color:white;font-weight:900">E</div>
+      <div style="display:flex;flex-direction:column;line-height:1.2">
+        <span style="font-size:1.3rem;font-weight:800;color:inherit;letter-spacing:-.5px">Efectech</span>
+        <span style="font-size:.6rem;font-weight:500;color:#1a9e60;letter-spacing:.4px">Efectivo digital, al instante.</span>
+      </div>
+    </div>
+  </div>
+  <div class="hamburger" id="hamburger">
+    <span></span><span></span><span></span>
+  </div>
+  <ul class="nav-links" id="navLinks">
+    <li><a class="nav-link" href="#hero">Inicio</a></li>
+    <li><a class="nav-link" href="#servicios">Servicios</a></li>
+    <li><a class="nav-link" href="#nosotros">Nosotros</a></li>
+    <li><a class="nav-link" href="#contacto">Contacto</a></li>
+    <li><a href="https://app.efectech.com/portal.html" button class="btn-portal"><i class="fa-solid fa-user"></i> Mi Portal</a></li>
+  </ul>
+</nav>
+
+<!-- ▸ HERO SLIDER -->
+<section id="hero">
+  <div class="slide slide-1 active"></div>
+  <div class="slide slide-2"></div>
+  <div class="slide slide-3"></div>
+
+  <!-- Animated blobs -->
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="blob blob-3"></div>
+
+  <!-- Particles -->
+  <div class="particles" id="particles"></div>
+
+  <!-- Slide arrows -->
+  <div class="slide-arrows">
+    <div class="slide-arr" onclick="changeSlide(-1)"><i class="fa-solid fa-chevron-left"></i></div>
+    <div class="slide-arr" onclick="changeSlide(1)"><i class="fa-solid fa-chevron-right"></i></div>
+  </div>
+
+  <div class="hero-content">
+    <!-- Left text -->
+    <div class="hero-left">
+      <span class="hero-eyebrow"><i class="fa-solid fa-circle-dot"></i> Fintech de confianza · Perú</span>
+      <h1 class="hero-title">
+        Efectivo digital,<br/>
+        <span class="gradient-text">al instante.</span>
+      </h1>
+      <p class="hero-desc">
+        Accede a préstamos rápidos, seguros y 100% digitales.<br/>
+        Sin filas, sin papeleo. Solo tú y tu dinero en minutos.
+      </p>
+      <div class="hero-btns">
+        <a href="https://app.efectech.com/solicitud.html" class="btn-primary">
+          <i class="fa-solid fa-bolt"></i> Solicitar Préstamo
+        </a>
+        </button>
+        <button class="btn-secondary" onclick="document.getElementById('servicios').scrollIntoView({behavior:'smooth'})">
+          <i class="fa-solid fa-play"></i> Ver Servicios
+        </button>
+      </div>
+    </div>
+
+    <!-- Loan Calculator -->
+    <div class="loan-card">
+      <h3><i class="fa-solid fa-calculator" style="color:var(--green-mid)"></i> ¿Cuánto necesitas?</h3>
+
+      <div class="slider-wrap">
+        <div class="slider-labels"><span>S/. 100</span><span>S/. 3,000</span></div>
+        <div class="slider-val" id="amountVal">S/. 1,00</div>
+        <input type="range" id="amountSlider" min="100" max="3000" step="50" value="1"/>
+      </div>
+
+      <div class="slider-wrap">
+        <div class="slider-labels"><span>1 cuota</span><span>3 cuotas</span></div>
+        <div class="slider-val" id="cuotasVal">3 cuotas</div>
+        <input type="range" id="cuotasSlider" min="1" max="3" step="1" value="1"/>
+      </div>
+
+      <div class="calc-results">
+        <div class="calc-row">
+          <span>Pago mensual</span>
+          <span id="pagoMensual">S/. 357</span>
+        </div>
+        <div class="calc-row">
+          <span>N° cuotas</span>
+          <span id="numCuotas">3</span>
+        </div>
+        <div class="calc-row">
+          <span>Total a pagar</span>
+          <span id="totalPagar">S/. 1,071</span>
+        </div>
+      </div>
+
+      <a href="https://app.efectech.com/solicitud.html" class="btn-solicitar">
+        <i class="fa-solid fa-paper-plane"></i> Solicitar Ahora
+      </a>
+    </div>
+  </div>
+
+  <!-- Slide dots -->
+  <div class="slide-nav" id="slideDots"></div>
+
+  <!-- Scroll indicator -->
+  <div class="scroll-indicator">
+    <div class="scroll-line"></div>
+    <span class="scroll-text">Scroll</span>
+  </div>
+</section>
+
+<!-- ▸ STATS -->
+<section id="stats">
+  <div class="stat-item reveal">
+    <span class="stat-number" data-target="10">0</span>
+    <span class="stat-label">Clientes satisfechos</span>
+  </div>
+  <div class="stat-item reveal">
+    <span class="stat-number" data-target="98">0</span>
+    <span class="stat-label">% Aprobación online</span>
+  </div>
+  <div class="stat-item reveal">
+    <span class="stat-number" data-target="15">0</span>
+    <span class="stat-label">Minutos de aprobación</span>
+  </div>
+  <div class="stat-item reveal">
+    <span class="stat-number" data-target="24">0</span>
+    <span class="stat-label">Horas disponibles</span>
+  </div>
+</section>
+
+<!-- ▸ SERVICIOS -->
+<section id="servicios">
+  <div class="section-header reveal">
+    <div class="section-tag"><i class="fa-solid fa-grid-2"></i> Lo que ofrecemos</div>
+    <h2 class="section-title">Nuestros <span>Servicios</span></h2>
+    <p class="section-desc">Soluciones financieras diseñadas para adaptarse a tu ritmo de vida y necesidades.</p>
+  </div>
+
+  <div class="services-grid">
+    <div class="service-card reveal">
+      <div class="service-icon"><i class="fa-solid fa-bolt"></i></div>
+      <h4>Préstamo Express</h4>
+      <p>Dinero en tu cuenta en menos de 15 minutos. Proceso 100% digital, sin garantías ni fiadores.</p>
+      <a class="service-link" href="#contacto">Solicitar <i class="fa-solid fa-arrow-right"></i></a>
+    </div>
+    <div class="service-card reveal" style="transition-delay:.1s">
+      <div class="service-icon"><i class="fa-solid fa-store"></i></div>
+      <h4>Crédito para Negocio</h4>
+      <p>Impulsa tu empresa con capital de trabajo rápido. Préstamos desde S/. 500 hasta S/. 5,000.</p>
+      <a class="service-link" href="#contacto">Solicitar <i class="fa-solid fa-arrow-right"></i></a>
+    </div>
+    <div class="service-card reveal" style="transition-delay:.3s">
+      <div class="service-icon"><i class="fa-solid fa-rotate"></i></div>
+      <h4>Refinanciamiento</h4>
+      <p>Consolida tus deudas en un solo pago cómodo. Reduce tu cuota mensual hasta un 40%.</p>
+      <a class="service-link" href="#contacto">Solicitar <i class="fa-solid fa-arrow-right"></i></a>
+    </div>
+    <div class="service-card reveal" style="transition-delay:.4s">
+      <div class="service-icon"><i class="fa-solid fa-mobile-screen"></i></div>
+      <h4>App Efectech</h4>
+      <p>Gestiona tu préstamo desde tu celular. Consulta saldos, realiza pagos y más en un solo lugar.</p>
+      <a class="service-link" href="#contacto">Conocer más <i class="fa-solid fa-arrow-right"></i></a>
+    </div>
+  </div>
+</section>
+
+<!-- ▸ COMO FUNCIONA -->
+<section id="como">
+  <div class="section-header reveal">
+    <div class="section-tag"><i class="fa-solid fa-list-check"></i> Simple y rápido</div>
+    <h2 class="section-title">¿Cómo <span>funciona</span>?</h2>
+    <p class="section-desc">En solo 4 pasos obtienes tu préstamo. Sin filas, sin papeleos, desde donde estés.</p>
+  </div>
+
+  <div class="steps-wrap">
+    <div class="step reveal">
+      <div class="step-num"><i class="fa-solid fa-user-plus"></i></div>
+      <h4>Regístrate</h4>
+      <p>Crea tu cuenta en menos de 2 minutos con tu DNI y correo electrónico.</p>
+    </div>
+    <div class="step reveal" style="transition-delay:.15s">
+      <div class="step-num"><i class="fa-solid fa-file-signature"></i></div>
+      <h4>Solicita</h4>
+      <p>Elige el monto y plazo que necesitas. Completa el formulario 100% digital.</p>
+    </div>
+    <div class="step reveal" style="transition-delay:.3s">
+      <div class="step-num"><i class="fa-solid fa-circle-check"></i></div>
+      <h4>Aprobación</h4>
+      <p>Nuestro sistema evalúa tu solicitud en segundos y te notifica al instante.</p>
+    </div>
+    <div class="step reveal" style="transition-delay:.45s">
+      <div class="step-num"><i class="fa-solid fa-money-bill-transfer"></i></div>
+      <h4>Recibe</h4>
+      <p>El dinero llega a tu cuenta o billetera digital en minutos. ¡Así de fácil!</p>
+    </div>
+  </div>
+</section>
+
+<!-- ▸ NOSOTROS -->
+<section id="nosotros">
+  <div class="about-grid">
+    <div class="about-visual reveal-left">
+      <div class="about-img-main">
+        <i class="fa-solid fa-building-columns"></i>
+      </div>
+      <div class="about-badge">
+        <span class="num">5+</span>
+        <span class="lbl">Años de experiencia</span>
+      </div>
+    </div>
+
+    <div class="about-text reveal-right">
+      <div class="section-header">
+        <div class="section-tag"><i class="fa-solid fa-circle-info"></i> Quiénes somos</div>
+        <h2 class="section-title">Fintech peruana con<br/><span>propósito real</span></h2>
+        <p class="section-desc">
+          Efectech nació con una misión clara: democratizar el acceso al crédito en el Perú.
+          Somos una empresa 100% digital que combina tecnología avanzada con un equipo humano
+          comprometido en brindarte soluciones financieras transparentes, rápidas y accesibles.
+        </p>
+      </div>
+
+      <div class="features-list">
+        <div class="feat-item"><i class="fa-solid fa-check-circle"></i> Proceso 100% digital</div>
+        <div class="feat-item"><i class="fa-solid fa-check-circle"></i> Tasas transparentes</div>
+        <div class="feat-item"><i class="fa-solid fa-check-circle"></i> Aprobación en minutos</div>
+        <div class="feat-item"><i class="fa-solid fa-check-circle"></i> Sin letra pequeña</div>
+        <div class="feat-item"><i class="fa-solid fa-check-circle"></i> Atención 24/7</div>
+        <div class="feat-item"><i class="fa-solid fa-check-circle"></i> Datos 100% seguros</div>
+      </div>
+
+      <div style="margin-top:2rem">
+        <button class="btn-primary" onclick="document.getElementById('contacto').scrollIntoView({behavior:'smooth'})">
+          <i class="fa-solid fa-handshake"></i> Trabaja con nosotros
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ▸ TESTIMONIOS -->
+<section id="testimonios">
+  <div class="section-header reveal">
+    <div class="section-tag"><i class="fa-solid fa-star"></i> Lo que dicen</div>
+    <h2 class="section-title">Clientes <span style="-webkit-text-fill-color:var(--green-light)">satisfechos</span></h2>
+    <p class="section-desc" style="color:rgba(255,255,255,.55)">Miles de peruanos ya confían en Efectech para sus necesidades financieras.</p>
+  </div>
+
+  <div class="testi-slider">
+    <div class="testi-track" id="testiTrack">
+      <div class="testi-card">
+        <div class="testi-inner">
+          <div class="testi-stars">★★★★★</div>
+          <p class="testi-text">"Me aprobaron el préstamo en 3 minutos. Nunca pensé que fuera tan fácil. El dinero llegó a mi Yape antes de que terminara de desayunar. Efectech es lo mejor que me pudo pasar para mi negocio."</p>
+          <div class="testi-author">
+            <div class="testi-avatar">M</div>
+            <div>
+              <div class="testi-name">María Quispe</div>
+              <div class="testi-role">Dueña de bodega · Lima</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card">
+        <div class="testi-inner">
+          <div class="testi-stars">★★★★★</div>
+          <p class="testi-text">"Necesitaba dinero urgente para pagar el semestre de mi hija. En menos de 10 minutos tenía la aprobación y el desembolso. La tasa es justa y el trato fue excelente desde el inicio."</p>
+          <div class="testi-author">
+            <div class="testi-avatar">C</div>
+            <div>
+              <div class="testi-name">Carlos Mendoza</div>
+              <div class="testi-role">Ingeniero · Arequipa</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card">
+        <div class="testi-inner">
+          <div class="testi-stars">★★★★★</div>
+          <p class="testi-text">"Refinancié mis deudas con Efectech y bajé mi pago mensual a la mitad. El proceso fue transparente, sin sorpresas. Ya llevo 8 meses como cliente y cada vez más satisfecha."</p>
+          <div class="testi-author">
+            <div class="testi-avatar">A</div>
+            <div>
+              <div class="testi-name">Ana Torres</div>
+              <div class="testi-role">Enfermera · Trujillo</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="testi-nav" id="testiNav"></div>
+  </div>
+</section>
+
+<!-- ▸ CONTACTO -->
+<section id="contacto">
+  <div class="section-header reveal">
+    <div class="section-tag"><i class="fa-solid fa-envelope"></i> Escríbenos</div>
+    <h2 class="section-title">¿Listo para <span>empezar</span>?</h2>
+    <p class="section-desc">Completa el formulario y un asesor se contactará contigo en menos de 30 minutos.</p>
+  </div>
+
+  <div class="contact-grid">
+    <div class="contact-info reveal-left">
+      <h3>Estamos aquí<br/>para ayudarte</h3>
+      <p>Nuestro equipo de asesores está disponible para guiarte en cada paso de tu solicitud de crédito. No estás solo en este proceso.</p>
+
+      <div class="contact-item">
+        <div class="contact-icon-box"><i class="fa-solid fa-phone"></i></div>
+        <div class="contact-item-text">
+          <strong>Teléfono / WhatsApp</strong>
+          <span>+51 900 000 000</span>
+        </div>
+      </div>
+      <div class="contact-item">
+        <div class="contact-icon-box"><i class="fa-solid fa-envelope"></i></div>
+        <div class="contact-item-text">
+          <strong>Correo electrónico</strong>
+          <span>hola@efectech.com</span>
+        </div>
+      </div>
+      <div class="contact-item">
+        <div class="contact-icon-box"><i class="fa-solid fa-location-dot"></i></div>
+        <div class="contact-item-text">
+          <strong>Oficina principal</strong>
+          <span>Lima, Perú · Atención online 24/7</span>
+        </div>
+      </div>
+      <div class="contact-item">
+        <div class="contact-icon-box"><i class="fa-solid fa-clock"></i></div>
+        <div class="contact-item-text">
+          <strong>Horario de atención</strong>
+          <span>Lunes – Domingo: 7am – 10pm</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="contact-form reveal-right">
+      <form id="contactForm" onsubmit="handleSubmit(event)">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Nombre completo *</label>
+            <input type="text" placeholder="Tu nombre" required/>
+          </div>
+          <div class="form-group">
+            <label>DNI *</label>
+            <input type="text" placeholder="12345678" maxlength="8" required/>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Teléfono / WhatsApp *</label>
+            <input type="tel" placeholder="+51 9XX XXX XXX" required/>
+          </div>
+          <div class="form-group">
+            <label>Correo electrónico</label>
+            <input type="email" placeholder="tu@correo.com"/>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>¿Qué servicio te interesa? *</label>
+          <select required>
+            <option value="">Selecciona una opción</option>
+            <option>Préstamo Express</option>
+            <option>Crédito para Negocio</option>
+            <option>Refinanciamiento</option>
+            <option>Otro</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>¿Cuánto necesitas? *</label>
+          <select required>
+            <option value="">Selecciona un rango</option>
+            <option>S/. 100 – S/. 500</option>
+            <option>S/. 501 – S/. 1,100</option>
+            <option>S/. 1,101 – S/. 2,00</option>
+            <option>S/. 2,001 – S/. 3,000</option>
+            <option>Más de S/. 3,000</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Mensaje (opcional)</label>
+          <textarea placeholder="Cuéntanos más sobre tu necesidad…"></textarea>
+        </div>
+        <button class="btn-submit" type="submit">
+          <i class="fa-solid fa-paper-plane"></i> Enviar solicitud
+        </button>
+        <div class="form-success" id="formSuccess">
+          <i class="fa-solid fa-circle-check"></i> ¡Gracias! Tu solicitud fue enviada. Te contactaremos pronto.
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- ▸ FOOTER -->
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <!-- Footer logo – usa images/logo-white.png (fondo oscuro, siempre blanco) -->
+      <div style="margin-bottom:1rem">
+        <img src="images/logo-white.png"
+             alt="Efectech"
+             style="height:55px;width:auto;display:block"
+             onerror="this.replaceWith(document.getElementById('logoFallbackFt').content.cloneNode(true))"/>
+        <template id="logoFallbackFt">
+          <div style="display:flex;align-items:center;gap:10px">
+            <div style="width:40px;height:40px;background:linear-gradient(135deg,#2ec97e,#22d3ee);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;color:white;font-weight:900">E</div>
+            <div style="display:flex;flex-direction:column;line-height:1.2">
+              <span style="font-size:1.3rem;font-weight:800;color:white;letter-spacing:-.5px">Efectech</span>
+              <span style="font-size:.6rem;font-weight:500;color:#5de08a;letter-spacing:.4px">Efectivo digital, al instante.</span>
+            </div>
+          </div>
+        </template>
+      </div>
+      <p>Somos una fintech peruana comprometida con democratizar el acceso al crédito. Tecnología, transparencia y confianza en cada préstamo.</p>
+      <div class="footer-social">
+        <a class="social-link" href="#"><i class="fa-brands fa-facebook-f"></i></a>
+        <a class="social-link" href="#"><i class="fa-brands fa-instagram"></i></a>
+        <a class="social-link" href="#"><i class="fa-brands fa-tiktok"></i></a>
+        <a class="social-link" href="#"><i class="fa-brands fa-linkedin-in"></i></a>
+        <a class="social-link" href="#"><i class="fa-brands fa-whatsapp"></i></a>
+      </div>
+    </div>
+
+    <div class="footer-col">
+      <h5>Servicios</h5>
+      <ul>
+        <li><a href="#servicios">Préstamo Express</a></li>
+        <li><a href="#servicios">Crédito Negocio</a></li>
+        <li><a href="#servicios">Refinanciamiento</a></li>
+        <li><a href="#servicios">App Efectech</a></li>
+      </ul>
+    </div>
+
+    <div class="footer-col">
+      <h5>Empresa</h5>
+      <ul>
+        <li><a href="#nosotros">Quiénes somos</a></li>
+        <li><a href="#como">Cómo funciona</a></li>
+        <li><a href="#testimonios">Testimonios</a></li>
+        <li><a href="#">Blog financiero</a></li>
+        <li><a href="#">Trabaja con nosotros</a></li>
+        <li><a href="#">Términos y condiciones</a></li>
+      </ul>
+    </div>
+
+    <div class="footer-col">
+      <h5>Contacto</h5>
+      <ul class="footer-contact">
+        <li><i class="fa-solid fa-phone"></i> +51 900 000 000</li>
+        <li><i class="fa-brands fa-whatsapp"></i> +51 900 000 000</li>
+        <li><i class="fa-solid fa-envelope"></i> hola@efectech.com</li>
+        <li><i class="fa-solid fa-location-dot"></i> Chimbote, Perú</li>
+        <li><i class="fa-solid fa-clock"></i> 7am – 10pm, todos los días</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="footer-bottom">
+    <span>© 2025 Efectech. Todos los derechos reservados.</span>
+    <span>Inscrito en la <a href="#">SBS Perú</a> · <a href="#">Política de privacidad</a> · <a href="#">Cookies</a></span>
+  </div>
+</footer>
+
+<!-- ▸ FLOATING CTAs -->
+<a class="wa-btn" href="https://wa.me/51936823898" target="_blank"><i class="fa-brands fa-whatsapp"></i></a>
+<a class="floating-cta" id="floatingCta" href="https://app.efectech.com/solicitud.html">
+  <i class="fa-solid fa-bolt"></i> Solicitar Préstamo
+</a>
+<div class="back-top" id="backTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">
+  <i class="fa-solid fa-chevron-up"></i>
+</div>
+
+<!-- ▸ SCRIPTS -->
+<script>
+/* ── Particles ── */
+(function(){
+  const c = document.getElementById('particles');
+  for(let i=0;i<35;i++){
+    const p = document.createElement('div');
+    p.className='particle';
+    p.style.cssText = `left:${Math.random()*100}%;width:${2+Math.random()*3}px;height:${2+Math.random()*3}px;animation-duration:${8+Math.random()*12}s;animation-delay:${-Math.random()*14}s;opacity:${.3+Math.random()*.5}`;
+    c.appendChild(p);
+  }
+})();
+
+/* ── Hero Slider ── */
+const slides = document.querySelectorAll('.slide');
+const dotsWrap = document.getElementById('slideDots');
+let current = 0, autoTimer;
+
+slides.forEach((_,i) => {
+  const d = document.createElement('div');
+  d.className = 'slide-dot' + (i===0?' active':'');
+  d.onclick = ()=>goSlide(i);
+  dotsWrap.appendChild(d);
+});
+
+function goSlide(n){
+  slides[current].classList.remove('active');
+  dotsWrap.children[current].classList.remove('active');
+  current = (n+slides.length)%slides.length;
+  slides[current].classList.add('active');
+  dotsWrap.children[current].classList.add('active');
+}
+function changeSlide(dir){ goSlide(current+dir); resetAuto(); }
+function resetAuto(){ clearInterval(autoTimer); autoTimer=setInterval(()=>goSlide(current+1),5000); }
+resetAuto();
+
+/* ── Navbar scroll ── */
+const nav = document.getElementById('navbar');
+const floatingCta = document.getElementById('floatingCta');
+const backTop = document.getElementById('backTop');
+window.addEventListener('scroll',()=>{
+  nav.classList.toggle('scrolled', scrollY>60);
+  floatingCta.classList.toggle('visible', scrollY>400);
+  backTop.classList.toggle('visible', scrollY>400);
+});
+
+/* ── Hamburger ── */
+document.getElementById('hamburger').addEventListener('click',()=>{
+  document.getElementById('navLinks').classList.toggle('open');
+});
+document.querySelectorAll('.nav-link').forEach(l=>l.addEventListener('click',()=>{
+  document.getElementById('navLinks').classList.remove('open');
+}));
+
+/* ── Loan Calculator ── */
+const amtSlider  = document.getElementById('amountSlider');
+const cuotSlider = document.getElementById('cuotasSlider');
+const RATE = 3.50; // 3.50% mensual
+
+function updateCalc(){
+  const amt  = parseInt(amtSlider.value);
+  const quot = parseInt(cuotSlider.value);
+  document.getElementById('amountVal').textContent = 'S/. ' + amt.toLocaleString();
+  document.getElementById('cuotasVal').textContent  = quot + (quot===1?' cuota':' cuotas');
+
+  // Monthly payment formula: PMT = P * r / (1-(1+r)^-n)
+  const r = RATE, n = quot;
+  const monthly = n===1 ? amt*(1+r) : amt*r/(1-Math.pow(1+r,-n));
+  const total = monthly * n;
+
+  document.getElementById('pagoMensual').textContent = 'S/. ' + Math.round(monthly).toLocaleString();
+  document.getElementById('numCuotas').textContent   = quot + (quot===1?' mes':' meses');
+  document.getElementById('totalPagar').textContent  = 'S/. ' + Math.round(total).toLocaleString();
+
+  // Update slider fill
+  const amtPct = ((amt-100)/(3000-100))*100;
+  const cuotPct= ((quot-1)/(3-1))*100;
+  amtSlider.style.setProperty('--pct', amtPct+'%');
+  cuotSlider.style.setProperty('--pct', cuotPct+'%');
+}
+amtSlider.addEventListener('input', updateCalc);
+cuotSlider.addEventListener('input', updateCalc);
+updateCalc();
+
+/* ── Testimonials slider ── */
+const testiTrack = document.getElementById('testiTrack');
+const testiNav   = document.getElementById('testiNav');
+const testiCards = testiTrack.querySelectorAll('.testi-card');
+let testiCurrent = 0, testiTimer;
+
+testiCards.forEach((_,i)=>{
+  const d = document.createElement('div');
+  d.className = 'testi-dot'+(i===0?' active':'');
+  d.onclick = ()=>goTesti(i);
+  testiNav.appendChild(d);
+});
+
+function goTesti(n){
+  testiNav.children[testiCurrent].classList.remove('active');
+  testiCurrent=(n+testiCards.length)%testiCards.length;
+  testiTrack.style.transform=`translateX(-${testiCurrent*100}%)`;
+  testiNav.children[testiCurrent].classList.add('active');
+}
+testiTimer = setInterval(()=>goTesti(testiCurrent+1),6000);
+
+/* ── Intersection Observer ── */
+const observer = new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      e.target.classList.add('visible');
+      // Counter animation for stats
+      const num = e.target.querySelector('[data-target]');
+      if(num && !num.dataset.done){
+        num.dataset.done='1';
+        const target=+num.dataset.target;
+        const dur=1800, step=16;
+        const inc=target/(dur/step);
+        let cur=0;
+        const t=setInterval(()=>{
+          cur=Math.min(cur+inc,target);
+          num.textContent=target>100?Math.round(cur).toLocaleString():Math.round(cur);
+          if(cur>=target){ num.textContent=target>100?target.toLocaleString():target; clearInterval(t); }
+        },step);
+      }
+    }
+  });
+},{threshold:.15});
+document.querySelectorAll('.reveal,.reveal-left,.reveal-right').forEach(el=>observer.observe(el));
+
+/* ── Contact Form ── */
+function handleSubmit(e){
+  e.preventDefault();
+  const btn=e.target.querySelector('.btn-submit');
+  btn.innerHTML='<i class="fa-solid fa-spinner fa-spin"></i> Enviando…';
+  btn.disabled=true;
+  setTimeout(()=>{
+    btn.innerHTML='<i class="fa-solid fa-check"></i> ¡Enviado!';
+    document.getElementById('formSuccess').style.display='block';
+    e.target.reset();
+    setTimeout(()=>{
+      btn.innerHTML='<i class="fa-solid fa-paper-plane"></i> Enviar solicitud';
+      btn.disabled=false;
+      document.getElementById('formSuccess').style.display='none';
+    },4000);
+  },1500);
+}
+
+/* ── Active nav link on scroll ── */
+const sections = document.querySelectorAll('section[id]');
+window.addEventListener('scroll',()=>{
+  let cur='';
+  sections.forEach(s=>{ if(scrollY>=s.offsetTop-120) cur=s.id; });
+  document.querySelectorAll('.nav-link').forEach(l=>{
+    l.style.color = l.getAttribute('href')==='#'+cur ? 'var(--green-mid)' : '';
+  });
+});
+</script>
+</body>
+</html>

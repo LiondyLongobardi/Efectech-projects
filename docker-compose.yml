@@ -1,0 +1,24 @@
+# ── Efectech – Docker Compose ─────────────────────────────────────
+# Usage:  docker compose up -d
+# Update: docker compose pull && docker compose up -d --build
+
+services:
+  web:
+    build: .
+    image: efectech-web:latest
+    container_name: efectech-web
+    restart: unless-stopped
+    user: "root"                                                  # necesario para leer bind mounts en Synology
+    ports:
+      - "8089:80"     # Cloudflare Tunnel → port 8089 on your server
+    volumes:
+      - ./images:/usr/share/nginx/html/images                   # logos en vivo (sin :ro por compatibilidad Synology)
+      - nginx_logs:/var/log/nginx
+    environment:
+      - TZ=America/Lima
+    labels:
+      - "com.efectech.service=website"
+      - "com.efectech.env=production"
+
+volumes:
+  nginx_logs:
